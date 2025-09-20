@@ -199,15 +199,15 @@ We welcome contributions from the community! Areas where you can help:
 
 ### Development Setup
 ```bash
-git clone https://github.com/your-org/travel-and-tourism.git
-cd travel-and-tourism
+git clone https://github.com/Saathvik879/Travel-and-Tourism.git
+cd Travel-and-Tourism
 # Open index.html in your browser or serve with a local server
 python -m http.server 8000  # Or use your preferred method
 ```
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 📞 Contact & Support
 
