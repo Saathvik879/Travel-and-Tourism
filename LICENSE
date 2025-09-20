@@ -1,8 +1,6 @@
-# MIT License
+MIT License
 
-## NATPAC Travel Data Collection System
-
-Copyright (c) 2025 National Transportation Planning and Research Centre (NATPAC), Kerala State Council for Science, Technology and Environment (KSCSTE), Government of Kerala
+Copyright (c) 2025 Saathvik879
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,9 +22,9 @@ SOFTWARE.
 
 ## Additional Terms for Government Use
 
-This software is developed for transportation planning and research purposes under the Government of Kerala, India. While the software is licensed under MIT terms, users are encouraged to:
+This software is developed for transportation planning and research purposes inspired by the Government of Kerala's NATPAC initiative. While the software is licensed under MIT terms, users are encouraged to:
 
-1. Acknowledge NATPAC and KSCSTE in any derivatives or publications
+1. Acknowledge the original concept from NATPAC and KSCSTE in any derivatives or publications
 2. Consider data privacy and user consent requirements in their jurisdiction
 3. Respect the intended use for transportation research and planning
 4. Contribute improvements back to the community
@@ -41,14 +39,7 @@ This software is designed to collect and process personal location data. Users i
 - Provide clear privacy policies to end users
 - Ensure data is used only for legitimate transportation planning purposes
 
-## Contact Information
+## Project Attribution
 
-For questions regarding this license or the software:
+This implementation is maintained by [Saathvik879 on GitHub](https://github.com/Saathvik879/Travel-and-Tourism). Contributions, forks, and feedback are welcome via GitHub issues or pull requests.
 
-**KSCSTE-National Transportation Planning and Research Centre (NATPAC)**  
-K.Karunakaran Transpark, Akkulam  
-Thuruvikkal P.O, Thiruvananthapuram - 695 011  
-Kerala, India  
-
-Email: contactus.natpac@kerala.gov.in  
-Website: https://www.natpac.kerala.gov.in
