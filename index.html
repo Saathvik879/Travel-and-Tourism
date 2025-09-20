@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NATPAC Travel Data Collection</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Consent Modal -->
+    <div id="consentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <img src="https://user-gen-media-assets.s3.amazonaws.com/gemini_images/eacaad23-7afd-4f46-a116-59c953a20fe3.png" alt="NATPAC Logo" class="modal-logo">
+                <h2>Data Collection Consent</h2>
+                <p class="modal-subtitle">Government of Kerala | KSCSTE-NATPAC</p>
+            </div>
+            <div class="modal-body">
+                <p>NATPAC is developing a comprehensive transportation planning system for Kerala. Your participation will help us improve public transportation and urban planning.</p>
+                
+                <h3>Data We Collect:</h3>
+                <ul class="data-list">
+                    <li><i class="fas fa-map-marker-alt"></i> Location data (GPS coordinates)</li>
+                    <li><i class="fas fa-clock"></i> Trip timings and duration</li>
+                    <li><i class="fas fa-route"></i> Transportation modes used</li>
+                    <li><i class="fas fa-users"></i> Number of accompanying travelers</li>
+                    <li><i class="fas fa-bullseye"></i> Trip purpose and destination</li>
+                </ul>
+
+                <div class="consent-options">
+                    <label class="consent-checkbox">
+                        <input type="checkbox" id="locationConsent" required>
+                        <span class="checkmark"></span>
+                        I consent to location data collection for trip tracking
+                    </label>
+                    <label class="consent-checkbox">
+                        <input type="checkbox" id="dataConsent" required>
+                        <span class="checkmark"></span>
+                        I consent to sharing anonymized data with NATPAC scientists
+                    </label>
+                    <label class="consent-checkbox">
+                        <input type="checkbox" id="privacyConsent" required>
+                        <span class="checkmark"></span>
+                        I have read and agree to the privacy policy
+                    </label>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn btn--secondary" onclick="declineConsent()">Decline</button>
+                    <button class="btn btn--primary" onclick="acceptConsent()" id="acceptBtn" disabled>Accept & Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div id="app" class="app-container hidden">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <img src="https://user-gen-media-assets.s3.amazonaws.com/gemini_images/d10f0945-6030-4469-8d09-a12d23bba0ee.png" alt="NATPAC" class="logo">
+                    <div class="title-section">
+                        <h1>NATPAC Travel Data</h1>
+                        <p>Transportation Planning System</p>
+                    </div>
+                </div>
+                <div class="status-indicator">
+                    <div class="status-dot" id="trackingStatus"></div>
+                    <span id="statusText">Not Tracking</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="tab-navigation">
+            <button class="tab-btn active" onclick="showTab('dashboard')">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </button>
+            <button class="tab-btn" onclick="showTab('active-trip')">
+                <i class="fas fa-route"></i>
+                <span>Active Trip</span>
+            </button>
+            <button class="tab-btn" onclick="showTab('history')">
+                <i class="fas fa-history"></i>
+                <span>History</span>
+            </button>
+            <button class="tab-btn" onclick="showTab('settings')">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </button>
+            <button class="tab-btn" onclick="showTab('export')">
+                <i class="fas fa-download"></i>
+                <span>Export</span>
+            </button>
+        </nav>
+
+        <!-- Dashboard Tab -->
+        <section id="dashboard" class="tab-content active">
+            <div class="container">
+                <div class="welcome-section">
+                    <h2>Welcome back, <span id="userName">Arjun Kumar</span>!</h2>
+                    <p>Track your daily commute and help improve Kerala's transportation</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: var(--color-bg-1);">
+                            <i class="fas fa-route"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="todayTrips">3</h3>
+                            <p>Trips Today</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: var(--color-bg-2);">
+                            <i class="fas fa-road"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="todayDistance">28.1 km</h3>
+                            <p>Distance Covered</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: var(--color-bg-3);">
+                            <i class="fas fa-bus"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="topMode">Bus</h3>
+                            <p>Most Used Mode</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tracking-section">
+                    <button class="tracking-btn" id="trackingBtn" onclick="toggleTracking()">
+                        <i class="fas fa-play"></i>
+                        <span>Start Trip Tracking</span>
+                    </button>
+                </div>
+
+                <div class="map-container">
+                    <div class="map-placeholder" id="dashboardMap">
+                        <i class="fas fa-map-marked-alt"></i>
+                        <p>Current Location: Thiruvananthapuram</p>
+                        <small>Last updated: Just now</small>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Active Trip Tab -->
+        <section id="active-trip" class="tab-content">
+            <div class="container">
+                <div class="active-trip-header">
+                    <h2>Current Trip</h2>
+                    <div class="trip-status">
+                        <div class="status-indicator">
+                            <div class="pulse-dot"></div>
+                            <span>Tracking Active</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="trip-details-panel">
+                    <div class="trip-info-grid">
+                        <div class="trip-info-item">
+                            <i class="fas fa-clock"></i>
+                            <div>
+                                <strong id="tripStartTime">08:30 AM</strong>
+                                <span>Start Time</span>
+                            </div>
+                        </div>
+                        <div class="trip-info-item">
+                            <i class="fas fa-hourglass-half"></i>
+                            <div>
+                                <strong id="tripDuration">25 min</strong>
+                                <span>Duration</span>
+                            </div>
+                        </div>
+                        <div class="trip-info-item">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <div>
+                                <strong id="currentSpeed">42 km/h</strong>
+                                <span>Current Speed</span>
+                            </div>
+                        </div>
+                        <div class="trip-info-item">
+                            <i class="fas fa-route"></i>
+                            <div>
+                                <strong id="tripDistance">8.3 km</strong>
+                                <span>Distance</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mode-detection">
+                    <h3>Detected Transportation Mode</h3>
+                    <div class="detected-mode">
+                        <span class="mode-icon" id="detectedModeIcon">🚌</span>
+                        <div class="mode-info">
+                            <strong id="detectedMode">Bus</strong>
+                            <div class="confidence-bar">
+                                <div class="confidence-fill" style="width: 92%"></div>
+                            </div>
+                            <span class="confidence-text">92% Confidence</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mode-correction">
+                        <h4>Correct if needed:</h4>
+                        <div class="mode-buttons" id="modeButtons">
+                            <!-- Mode buttons will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="companions-section">
+                    <h3>Accompanying Travelers</h3>
+                    <div class="companions-count">
+                        <button class="companion-btn" onclick="changeCompanions(-1)">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <span id="companionCount">0</span>
+                        <button class="companion-btn" onclick="changeCompanions(1)">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="purpose-section">
+                    <label for="tripPurpose" class="form-label">Trip Purpose</label>
+                    <select id="tripPurpose" class="form-control">
+                        <option value="">Select purpose...</option>
+                        <option value="Work">Work</option>
+                        <option value="School">School</option>
+                        <option value="Shopping">Shopping</option>
+                        <option value="Social">Social</option>
+                        <option value="Medical">Medical</option>
+                        <option value="Religious">Religious</option>
+                        <option value="Recreation">Recreation</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="trip-actions">
+                    <button class="btn btn--outline" onclick="pauseTrip()">
+                        <i class="fas fa-pause"></i>
+                        Pause Trip
+                    </button>
+                    <button class="btn btn--primary emergency-stop" onclick="stopTrip()">
+                        <i class="fas fa-stop"></i>
+                        End Trip
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Trip History Tab -->
+        <section id="history" class="tab-content">
+            <div class="container">
+                <div class="history-header">
+                    <h2>Trip History</h2>
+                    <div class="history-filters">
+                        <select id="modeFilter" class="form-control" onchange="filterTrips()">
+                            <option value="">All Modes</option>
+                            <option value="Walking">Walking</option>
+                            <option value="Bus">Bus</option>
+                            <option value="Car">Car</option>
+                            <option value="Auto-rickshaw">Auto-rickshaw</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="trip-list" id="tripList">
+                    <!-- Trip history items will be populated by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Settings Tab -->
+        <section id="settings" class="tab-content">
+            <div class="container">
+                <h2>Settings</h2>
+                
+                <div class="settings-section">
+                    <h3>User Profile</h3>
+                    <div class="form-group">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-control" value="Arjun Kumar">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Age</label>
+                        <input type="number" class="form-control" value="28">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Occupation</label>
+                        <input type="text" class="form-control" value="Software Engineer">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Location</label>
+                        <input type="text" class="form-control" value="Thiruvananthapuram">
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Privacy Controls</h3>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <strong>Share data with NATPAC</strong>
+                            <small>Allow anonymized data sharing for research</small>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <strong>Location tracking</strong>
+                            <small>Enable GPS tracking for trip detection</small>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Tracking Preferences</h3>
+                    <div class="form-group">
+                        <label class="form-label">Auto-detect Sensitivity</label>
+                        <select class="form-control">
+                            <option>High (recommended)</option>
+                            <option>Medium</option>
+                            <option>Low</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Data Export Tab -->
+        <section id="export" class="tab-content">
+            <div class="container">
+                <h2>Data Export</h2>
+                <p>Export your travel data for NATPAC scientists and researchers</p>
+                
+                <div class="export-options">
+                    <div class="form-group">
+                        <label class="form-label">Date Range</label>
+                        <div class="date-range">
+                            <input type="date" class="form-control" value="2025-09-01">
+                            <span>to</span>
+                            <input type="date" class="form-control" value="2025-09-20">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Export Format</label>
+                        <div class="format-options">
+                            <label class="format-option">
+                                <input type="radio" name="format" value="csv" checked>
+                                <div class="format-card">
+                                    <i class="fas fa-file-csv"></i>
+                                    <strong>CSV</strong>
+                                    <small>For spreadsheet analysis</small>
+                                </div>
+                            </label>
+                            <label class="format-option">
+                                <input type="radio" name="format" value="json">
+                                <div class="format-card">
+                                    <i class="fas fa-file-code"></i>
+                                    <strong>JSON</strong>
+                                    <small>For data processing</small>
+                                </div>
+                            </label>
+                            <label class="format-option">
+                                <input type="radio" name="format" value="pdf">
+                                <div class="format-card">
+                                    <i class="fas fa-file-pdf"></i>
+                                    <strong>PDF Report</strong>
+                                    <small>For presentations</small>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <h3>Data Preview</h3>
+                        <div class="data-preview">
+                            <p><strong>15 trips</strong> from the selected period</p>
+                            <p><strong>125.4 km</strong> total distance covered</p>
+                            <p><strong>5 modes</strong> of transportation used</p>
+                        </div>
+                    </div>
+
+                    <div class="export-actions">
+                        <button class="btn btn--outline" onclick="previewData()">
+                            <i class="fas fa-eye"></i>
+                            Preview Data
+                        </button>
+                        <button class="btn btn--primary" onclick="exportData()">
+                            <i class="fas fa-download"></i>
+                            Download Export
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
